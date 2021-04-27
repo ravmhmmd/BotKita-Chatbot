@@ -23,12 +23,12 @@ DROP TABLE IF EXISTS `data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `data` (
-  `id_task` varchar(25) DEFAULT NULL,
+  `id_task` varchar(25) NOT NULL,
   `kode_matkul` varchar(25) NOT NULL,
-  `Deskripsi` varchar(30) NOT NULL,
+  `deskripsi` varchar(30) NOT NULL,
   `jenis_task` varchar(30) NOT NULL,
   `tanggal` varchar(25) NOT NULL,
-  PRIMARY KEY (`kode_matkul`)
+  PRIMARY KEY (`id_task`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-04-27 13:13:39
+-- Dump completed on 2021-04-28  2:13:35

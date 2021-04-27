@@ -1,7 +1,7 @@
 import re
-from datetime import date, datetime
-from typing import Text
+from datetime import datetime
 import mariadb
+
 # Python program for KMP Algorithm
 def KMPSearch(pat, txt):
     M = len(pat)
@@ -62,43 +62,67 @@ def computeLPSArray(pat, M, lps):
                 lps[i] = 0
                 i += 1
 
-def stemInput(input, str1):
-    hasil = input.split()
-    found = False
-    for elmt in hasil:
-        if elmt == str1:
-            found = True
-            break
-    return found
-
 def getDate(date):
-    result = re.search(r'(\b\d{1,2}\D{0,3})? (?:(J|j)(?:anuari)|(F|f)(?:ebruari)|(M|m)(?:aret)|(A|a)(?:pril)|(M|m)(?:ei)|(J|j)(?:uni)|(J|j)(?:uli)|(A|a)(?:ugustus)|(S|S)(?:eptember)|(O|o)(?:ktober)|(Nov|Des|nov|des)(?:ember)?) (?:1\d{3}|2\d{3})(?=\D|$)' ,date)
+# 
+    result = re.search(r'(\b\d{1,2}\D{0,3})? (?:(J|j)(?:anuari)|(F|f)(?:ebruar)|(M|m)(?:aret)|(A|a)(?:pril)|(M|m)(?:ei)|(J|j)(?:uni)|(J|j)(?:uli)|(A|a)(?:ugustus)|(S|S)(?:eptember)|(O|o)(?:ktober)|(Nov|Des|nov|des)(?:ember)?) (?:1\d{3}|2\d{3})(?=\D|$)' ,date)
     if result == None:
-         res = re.search(r'\b(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/(1\d{1}|2\d{1})$' ,date)
-         return res.group()
+         reslt = re.search(r'\b(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/(1\d{1}|2\d{1})$' ,date)
+         if reslt == None:
+             res = re.search(r'\b(0?[1-9]|[12][0-9]|3[01])/(0?[1-9]|1[012])/(1\d{3}|2\d{3})$' ,date)
+             return res.group()
+         return reslt.group()
     return result.group()
 
 def getKodeKuliah(text):
     result = re.search(r'\b(?:IF1\d{3}|IF2\d{3}|IF3\d{3}|IF4\d{3})\b' ,text)
+    return result
+
+def getId(text):
+    result = re.search(r'\b(?:ID: \d{1}|ID: \d{2})\b' ,text)
     return result.group()
+
+def getJenisTask(list1, list2):
+    result = checkElmtList(list1, list2)
+    return result[0]
 
 def deleteSubstring(query, text):
     result = re.sub(query, "", text)
     return result
 
-def convertDate(text):
+def uppercaseTask(text):
+    chars = list(text)
+    chars[0] = chars[0].upper()
+    string = ''.join(chars)
+    return string
+
+def convertMonth(date):
+    idx = 0
+    date = date.split()
+    bln = date[1]
+    bln = uppercaseTask(bln)
+    bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+    month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    for i in range(len(bulan)):
+        if bln == bulan[i]:
+            idx = i
+    date[1] = month[idx]
+    date = ' '.join(date)
+    return date
+
+def convertDate(date):
     res = ""
-    if len(text) == 8:
-        date_obj = datetime.strptime(text, '%d/%m/%y')
+    if len(date) == 8:
+        date_obj = datetime.strptime(date, '%d/%m/%y')
         res = date_obj.strftime('%d/%m/%Y')
     else:
-        date_obj = datetime.strptime(text,"%d %B %Y")
+        convert_date = convertMonth(date)
+        date_obj = datetime.strptime(convert_date,"%d %B %Y")
         res = date_obj.strftime('%d/%m/%Y')
     return res
 
 def inputValue(text, query):
     stemText = text[KMPSearch(query,text):]
-    kodeKuliah = getKodeKuliah(stemText)
+    kodeKuliah = getKodeKuliah(stemText).group()
     tanggal = getDate(stemText)
     stemText = deleteSubstring(tanggal, stemText)
     stemText = deleteSubstring(kodeKuliah, stemText)
@@ -110,76 +134,163 @@ def inputValue(text, query):
     deskripsi = ' '.join(stemText)
     return (kodeKuliah, deskripsi, tanggal)
 
-def checkCommand():
-    
-    inpt = input()
-    conn = mariadb.connect(user="root", password="", host="localhost", database="stima2")
-    cur = conn.cursor()
+def checkElmtList(list1, list2):
+    return list(set(list1).intersection(list2))
+
+def stemInput2(text):
+    text = text.split()
+    return text
+
+def getFromDatabase(jenis, Id):
+    cur.execute("SELECT "+jenis+" FROM data WHERE id_task = '"+Id+"';")
+    for row in cur.fetchall():
+        return row[0]
+
+def cariDeadline(inpt):
+    kodeKuliah = getKodeKuliah(inpt).group()
+    cur.execute("SELECT tanggal FROM data WHERE kode_matkul = '"+kodeKuliah+"';")
+    for row in cur.fetchall():
+        print(row[0]) 
+
+def inputCommand(text):
+
     global turn
-    if stemInput(inpt, "tubes"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "tubes")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tubes", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print(Id, tanggal, "-", kodeKuliah,"- Tubes -", deskripsi)
+    task = ["kuis", "Kuis", "ujian", "Ujian", "Tubes", "tubes", "Tucil", "tucil", "praktikum", "Praktikum"]
+    listText = stemInput2(text)
 
-    elif stemInput(inpt, "Tubes"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Tubes")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tubes", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print("(ID: "+str(turn)+")", tanggal, "-", kodeKuliah,"- Tubes -", deskripsi)
+    # fungsionalitas update
+    if "sudah" in listText and "mengerjakan" in listText or "sudah" in listText and "menyelesaikan" in listText or "udah" in listText and "ngerjain" in listText:
+        fungsionalitasDeleteTask(text, listText, task)
+        turn -= 1
 
-    elif stemInput(inpt, "tucil"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "tucil")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tucil", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print(Id, tanggal, "-", kodeKuliah,"- Tucil -", deskripsi)
+    # fungsionalitas help
+    elif "help" in listText or "assistant" in listText or "bot" in listText:
+        fitur()
+        turn -= 1
+    # fungsionalitas update task
+    elif "diundur" in listText:
+        fungsionalitasUpdateTask(text, listText, task)
+        turn -= 1
 
-    elif stemInput(inpt, "Tucil"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Tucil")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tucil", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print(Id, tanggal, "-", kodeKuliah,"- Tucil -", deskripsi)
+    # fungsioalitas deadline
+    elif "deadline" in listText or "Deadline" in listText:
+        fungsionalitasDeadline(text)
+        turn -= 1
 
-    elif stemInput(inpt, "ujian"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "ujian")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Ujian", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print(Id, tanggal, "-", kodeKuliah,"- Ujian -", deskripsi)
+    # fungsinonalitas tambah task
+    elif len(checkElmtList(task, listText)) == 1:
+        fungsionalitasInputTask(text, listText, task)
 
-    elif stemInput(inpt, "Ujian"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Ujian")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Ujian", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print(Id, tanggal, "-", kodeKuliah,"- Ujian -", deskripsi)
-
-    elif stemInput(inpt, "kuis"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "kuis")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Kuis", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print(Id, tanggal, "-", kodeKuliah,"- Kuis -", deskripsi)
-
-    elif stemInput(inpt, "Kuis"):
-        (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Kuis")
-        Id = "(ID: "+str(turn)+")"
-        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Kuis", tanggal))
-        print("TASK BERHASIL DICATAT")
-        print(Id, tanggal, "-", kodeKuliah,"- Kuis -", deskripsi)
-    else:        
+    else:
         print("Maaf, pesan tidak dikenali")
-        turn -=1
-    conn.commit()
+        turn -= 1
+
+def fungsionalitasDeadline(inpt):
+    kodeKuliah = getKodeKuliah(inpt)
+    if kodeKuliah != None:
+        cariDeadline(inpt)
+    else:
+        print("ini yang gua buat")
+
+def fungsionalitasInputTask(inpt, listText, task):
     
+    global turn
+    jenisTask = getJenisTask(task, listText)
+    (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, jenisTask)
+    task = uppercaseTask(jenisTask)
+    Id = "(ID: "+str(turn)+")"
+
+    # execute db
+    cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, task, tanggal))
+    conn.commit()
+
+    # Display
+    output = ""
+    output += "TASK BERHASIL DICATAT\n"
+    output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ task+ " - "+ deskripsi
+    return output
+
+def fungsionalitasDeleteTask(inpt, listText, task):
+
+    
+    Id = "("+getId(inpt)+")"
+    jenisTask = getJenisTask(task, listText)
+    kodeKuliah = getFromDatabase("kode_matkul", Id)
+    deskripsi = getFromDatabase("deskripsi", Id)
+    tanggal = getFromDatabase("tanggal", Id)
+
+    # execute db
+    cur.execute("DELETE FROM data WHERE id_task = '"+Id+"';")
+    conn.commit()
+
+    # Display
+    output = ""
+    output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ jenisTask+ " - "+ deskripsi+"\n"
+    output += "BERHASIL DIHAPUS\n"
+    return output
+
+def fungsionalitasUpdateTask(inpt, listText, task):
+
+    tanggal = getDate(inpt)
+    Id = "("+getId(inpt)+")"
+    jenisTask = getJenisTask(task, listText)
+
+    # execute db
+    cur.execute("UPDATE data SET tanggal = '"+tanggal+"' WHERE id_task = '"+Id+"';")
+    kodeKuliah = getFromDatabase("kode_matkul", Id)
+    deskripsi = getFromDatabase("deskripsi", Id)
+    conn.commit()
+
+    # Display
+    output =""
+    output += "TASK BERHASIL DIUBAH\n"
+    output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ jenisTask+ " - "+ deskripsi+"\n"
+    return output
+    
+
+def fitur():
+    output = "[Fitur]\n"
+    output += " 1   Menambahkan task baru\n"
+    output += " 2   Melihat daftar task\n"
+    output += " 3   Mencari deadline pada rentang waktu tertentu\n"
+    output += " 4   Melihat deadline suatu task\n"
+    output += " 5   Memperbaharui task tertentu\n"
+    output += " 6   Menandai bahwa suatu task sudah selesai dikerjakan\n"
+    output += " 7   Menampilkan opsi help dan kata kunci yang difasilitasi oleh assistant\n"
+    output += " 8   Menampilkan pesan error jika assistant tidak dapat mengenali masukan user\n\n"
+    output += "[Daftar kata penting]\n"
+    output += " 1   Tubes\n"
+    output += " 2   Tucil\n"
+    output += " 3   Ujian\n"
+    output += " 4   Kuis\n"
+    output += " 5   Praktikum\n"
+    return output
+
+conn = mariadb.connect(user="root", password="", host="localhost", database="stima2")
+cur = conn.cursor()
 
 turn  = 1
-while True:
-    checkCommand()
-    turn += 1
+loop = True
+while loop:
+    result = input()
+    if result == "exit":
+        cur.execute("DELETE FROM data;")
+        conn.commit()
+        loop = False
+    else:
+        inputCommand(result)
+        turn += 1
+#result = re.search(r'\b(?:(?:(\ID: )(\d{1}|\d{2}\)))\b' ,"gua sudah menyelesaikan kuis (ID: 12) kemaren")
+# result = re.search(r'\b(?:[(]ID:[)])\b' ,"gua sudah menyelesaikan kuis (ID:) kemaren")
+# print(result.group()) 
 
-# "halo bot, tolong ingetin kalau ada Kuis IF3310 bab 2 sampai 3 pada 22 april 2014"
+# ======== test case ==========
+# Fungsionalitas 1
+# halo bot, tolong ingetin kalau ada Kuis IF3310 bab 2 sampai 3 pada 22 april 2014
+# Praktikum IF3310 materi generic class tanggal 31 mei 2020
+# oyy cokk ingetin gua lah ntar kuis IF2121 materi vektor tanggal 11/01/19
+# Deadline tugas IF2121 itu kapan
+# oyy bot lu bisa ngapain aja sih
+# gua sudah menyelesaikan kuis (ID: 1) kemaren
+# deadline tubes (ID: 1) diundur jadi tanggal 12/07/2021
+# oyy cok lu mau apa sih
