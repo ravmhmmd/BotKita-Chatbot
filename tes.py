@@ -157,33 +157,35 @@ def inputCommand(text):
     global turn
     task = ["kuis", "Kuis", "ujian", "Ujian", "Tubes", "tubes", "Tucil", "tucil", "praktikum", "Praktikum"]
     listText = stemInput2(text)
+    output = ""
 
     # fungsionalitas update
     if "sudah" in listText and "mengerjakan" in listText or "sudah" in listText and "menyelesaikan" in listText or "udah" in listText and "ngerjain" in listText:
-        fungsionalitasDeleteTask(text, listText, task)
+        output += fungsionalitasDeleteTask(text, listText, task)
         turn -= 1
 
     # fungsionalitas help
     elif "help" in listText or "assistant" in listText or "bot" in listText:
-        fitur()
+        output += fitur()
         turn -= 1
     # fungsionalitas update task
     elif "diundur" in listText:
-        fungsionalitasUpdateTask(text, listText, task)
+        output += fungsionalitasUpdateTask(text, listText, task)
         turn -= 1
 
     # fungsioalitas deadline
     elif "deadline" in listText or "Deadline" in listText:
-        fungsionalitasDeadline(text)
+        output += fungsionalitasDeadline(text)
         turn -= 1
 
     # fungsinonalitas tambah task
     elif len(checkElmtList(task, listText)) == 1:
-        fungsionalitasInputTask(text, listText, task)
+        output += fungsionalitasInputTask(text, listText, task)
 
     else:
-        print("Maaf, pesan tidak dikenali")
+        output += "Maaf, pesan tidak dikenali\n"
         turn -= 1
+    return output
 
 def fungsionalitasDeadline(inpt):
     kodeKuliah = getKodeKuliah(inpt)
