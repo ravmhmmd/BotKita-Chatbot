@@ -110,65 +110,76 @@ def inputValue(text, query):
     deskripsi = ' '.join(stemText)
     return (kodeKuliah, deskripsi, tanggal)
 
-def checkCommand(turn):
+def checkCommand():
     
     inpt = input()
-    conn = mariadb.connect(user="root", password="", host="localhost", database="stima")
+    conn = mariadb.connect(user="root", password="", host="localhost", database="stima2")
     cur = conn.cursor()
-
+    global turn
     if stemInput(inpt, "tubes"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "tubes")
-        cur.execute("INSERT INTO tubes VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tubes", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Tubes -", deskripsi)
+        print(Id, tanggal, "-", kodeKuliah,"- Tubes -", deskripsi)
 
     elif stemInput(inpt, "Tubes"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Tubes")
-        cur.execute("INSERT INTO tubes VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tubes", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Tubes -", deskripsi)
+        print("(ID: "+str(turn)+")", tanggal, "-", kodeKuliah,"- Tubes -", deskripsi)
 
     elif stemInput(inpt, "tucil"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "tucil")
-        cur.execute("INSERT INTO tucil VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tucil", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Tucil -", deskripsi)
+        print(Id, tanggal, "-", kodeKuliah,"- Tucil -", deskripsi)
 
     elif stemInput(inpt, "Tucil"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Tucil")
-        cur.execute("INSERT INTO tucil VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Tucil", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Tucil -", deskripsi)
+        print(Id, tanggal, "-", kodeKuliah,"- Tucil -", deskripsi)
 
     elif stemInput(inpt, "ujian"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "ujian")
-        cur.execute("INSERT INTO ujian VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Ujian", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Ujian -", deskripsi)
+        print(Id, tanggal, "-", kodeKuliah,"- Ujian -", deskripsi)
 
     elif stemInput(inpt, "Ujian"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Ujian")
-        cur.execute("INSERT INTO ujian VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Ujian", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Ujian -", deskripsi)
+        print(Id, tanggal, "-", kodeKuliah,"- Ujian -", deskripsi)
 
     elif stemInput(inpt, "kuis"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "kuis")
-        cur.execute("INSERT INTO kuis VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Kuis", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Kuis -", deskripsi)
+        print(Id, tanggal, "-", kodeKuliah,"- Kuis -", deskripsi)
 
     elif stemInput(inpt, "Kuis"):
         (kodeKuliah, deskripsi, tanggal) = inputValue(inpt, "Kuis")
-        cur.execute("INSERT INTO kuis VALUES (?, ?, ?);", (kodeKuliah, deskripsi, tanggal))
+        Id = "(ID: "+str(turn)+")"
+        cur.execute("INSERT INTO data VALUES (?, ?, ?, ?, ?);", (Id, kodeKuliah, deskripsi, "Kuis", tanggal))
         print("TASK BERHASIL DICATAT")
-        print("(ID:",turn,")", tanggal, "-", kodeKuliah,"- Kuis -", deskripsi)
+        print(Id, tanggal, "-", kodeKuliah,"- Kuis -", deskripsi)
     else:        
         print("Maaf, pesan tidak dikenali")
+        turn -=1
     conn.commit()
+    
+
 turn  = 1
 while True:
-    checkCommand(turn)
+    checkCommand()
     turn += 1
 
-# "halo bot, tolong ingetin kalau ada kuis IF3310 bab 2 sampai 3 pada 22 april 2014"
+# "halo bot, tolong ingetin kalau ada Kuis IF3310 bab 2 sampai 3 pada 22 april 2014"
