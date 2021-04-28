@@ -175,17 +175,25 @@ def stemInput2(text):
     return text
 
 def getFromDatabase(jenis, Id):
+    global conn
+    global cur
     cur.execute("SELECT "+jenis+" FROM data WHERE id_task = '"+Id+"';")
     for row in cur.fetchall():
         return row[0]
 
 def cariDeadline(inpt):
+    global conn
+    global cur
+
     kodeKuliah = getKodeKuliah(inpt).group()
     cur.execute("SELECT tanggal FROM data WHERE kode_matkul = '"+kodeKuliah+"';")
     for row in cur.fetchall():
         return row[0] 
 
 def showDeadlineWithJenisTask(deadlinePerSatuanWaktu, task, listText):
+    global conn
+    global cur
+
     deadlineDateSql = convertDeadlinetoDate(deadlinePerSatuanWaktu.group())
     jenisTask = getJenisTask(task, listText)[0]
     upper_jenisTask = uppercaseTask(jenisTask)
@@ -203,7 +211,7 @@ def showDeadlineWithJenisTask(deadlinePerSatuanWaktu, task, listText):
         deskripsi = C
         jenisTask = D
         tanggal = str(E)
-        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"\n"
+        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"<br>"
 
     if output == "":
         output = "Tidak ada"
@@ -211,6 +219,9 @@ def showDeadlineWithJenisTask(deadlinePerSatuanWaktu, task, listText):
     return output
 
 def showDeadline(deadlinePerSatuanWaktu):
+    global conn
+    global cur
+
     deadlineDateSql = convertDeadlinetoDate(deadlinePerSatuanWaktu.group())
 
     kodeMatkul= ""
@@ -226,7 +237,7 @@ def showDeadline(deadlinePerSatuanWaktu):
         deskripsi = C
         jenisTask = D
         tanggal = str(E)
-        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"\n"
+        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"<br>"
 
     if output == "":
         output = "Tidak ada"
@@ -234,6 +245,9 @@ def showDeadline(deadlinePerSatuanWaktu):
     return output
 
 def showDeadlineInterval(batasBawah, batasAtas):
+    global conn
+    global cur
+
     fromDate = changeDateToSqlFormat(batasBawah)
     dueDate = changeDateToSqlFormat(batasAtas)
 
@@ -250,7 +264,7 @@ def showDeadlineInterval(batasBawah, batasAtas):
         deskripsi = C
         jenisTask = D
         tanggal = str(E)
-        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"\n"
+        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"<br>"
 
     if output == "":
         output = "Tidak ada"
@@ -258,6 +272,8 @@ def showDeadlineInterval(batasBawah, batasAtas):
     return output
 
 def showAllDeadline():
+    global conn
+    global cur
 
     kodeMatkul= ""
     deskripsi =""
@@ -272,46 +288,46 @@ def showAllDeadline():
         deskripsi = C
         jenisTask = D
         tanggal = str(E)
-        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"\n"
+        output += Id+" "+tanggal+" - "+ kodeMatkul+" - "+jenisTask+" - "+deskripsi+"<br>"
         
     return output
 
 def inputCommand(text):
-
+    global conn
+    global cur
     global turn
+
     task = ["kuis", "Kuis", "ujian", "Ujian", "Tubes", "tubes", "Tucil", "tucil", "praktikum", "Praktikum"]
     listText = stemInput2(text)
     output = ""
     # fungsionalitas update
     if "sudah" in listText and "mengerjakan" in listText or "sudah" in listText and "menyelesaikan" in listText or "udah" in listText and "ngerjain" in listText:
-        
         output = fungsionalitasDeleteTask(text)
-        turn -= 1
 
     # fungsionalitas help
     elif "help" in listText or "assistant" in listText or "bot" in listText:
-        
         output = fitur()
-        turn -= 1
+
     # fungsionalitas update task
     elif "diundur" in listText:
         output = fungsionalitasUpdateTask(text)
-        
-        turn -= 1
 
     # fungsioalitas deadline
     elif "deadline" in listText or "Deadline" in listText:
         output = fungsionalitasDeadline(text, task, listText)
-        
-        turn -= 1
 
     # fungsinonalitas tambah task
     elif len(checkElmtList(task, listText)) == 1:
         output = fungsionalitasInputTask(text, listText, task)
+        turn += 1
+        
+    elif "exit" in listText:
+        cur.execute("DELETE FROM data;")
+        conn.commit()
+        return 
 
     else:
-        output = "Maaf, pesan tidak dikenali\n"
-        turn -= 1
+        output = "Maaf, pesan tidak dikenali<br>"
 
     return output
 
@@ -345,6 +361,8 @@ def fungsionalitasDeadline(inpt, task, listText):
     return output
 
 def fungsionalitasInputTask(inpt, listText, task):
+    global conn
+    global cur
     
     global turn
     jenisTask = getJenisTask(task, listText)[0]
@@ -359,11 +377,13 @@ def fungsionalitasInputTask(inpt, listText, task):
 
     # Display
     output = ""
-    output += "TASK BERHASIL DICATAT\n"
+    output += "TASK BERHASIL DICATAT<br>"
     output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ upper_jenisTask+ " - "+ deskripsi
     return output
 
 def fungsionalitasDeleteTask(inpt):
+    global conn
+    global cur
 
     
     Id = "("+getId(inpt)+")"
@@ -379,11 +399,13 @@ def fungsionalitasDeleteTask(inpt):
 
     # Display
     output = ""
-    output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ jenisTask+ " - "+ deskripsi+"\n"
-    output += "BERHASIL DIHAPUS\n"
+    output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ jenisTask+ " - "+ deskripsi+"<br>"
+    output += "BERHASIL DIHAPUS<br>"
     return output
 
 def fungsionalitasUpdateTask(inpt):
+    global conn
+    global cur
 
     tanggal = getDate(inpt)
     Id = "("+getId(inpt)+")"
@@ -398,43 +420,45 @@ def fungsionalitasUpdateTask(inpt):
 
     # Display
     output =""
-    output += "TASK BERHASIL DIUBAH\n"
-    output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ jenisTask+ " - "+ deskripsi+"\n"
+    output += "TASK BERHASIL DIUBAH<br>"
+    output += Id+" "+tanggal+ " - "+ kodeKuliah+" - "+ jenisTask+ " - "+ deskripsi+"<br>"
     return output
     
 
 def fitur():
-    output = "[Fitur]\n"
-    output += " 1   Menambahkan task baru\n"
-    output += " 2   Melihat daftar task\n"
-    output += " 3   Mencari deadline pada rentang waktu tertentu\n"
-    output += " 4   Melihat deadline suatu task\n"
-    output += " 5   Memperbaharui task tertentu\n"
-    output += " 6   Menandai bahwa suatu task sudah selesai dikerjakan\n"
-    output += " 7   Menampilkan opsi help dan kata kunci yang difasilitasi oleh assistant\n"
-    output += " 8   Menampilkan pesan error jika assistant tidak dapat mengenali masukan user\n\n"
-    output += "[Daftar kata penting]\n"
-    output += " 1   Tubes\n"
-    output += " 2   Tucil\n"
-    output += " 3   Ujian\n"
-    output += " 4   Kuis\n"
-    output += " 5   Praktikum\n"
+    output = "[Fitur]<br>"
+    output += " 1   Menambahkan task baru<br>"
+    output += " 2   Melihat daftar task<br>"
+    output += " 3   Mencari deadline pada rentang waktu tertentu<br>"
+    output += " 4   Melihat deadline suatu task<br>"
+    output += " 5   Memperbaharui task tertentu<br>"
+    output += " 6   Menandai bahwa suatu task sudah selesai dikerjakan<br>"
+    output += " 7   Menampilkan opsi help dan kata kunci yang difasilitasi oleh assistant<br>"
+    output += " 8   Menampilkan pesan error jika assistant tidak dapat mengenali masukan user<br><br>"
+    output += "[Daftar kata penting]<br>"
+    output += " 1   Tubes<br>"
+    output += " 2   Tucil<br>"
+    output += " 3   Ujian<br>"
+    output += " 4   Kuis<br>"
+    output += " 5   Praktikum<br>"
     return output
 
 conn = mariadb.connect(user="root", password="0405", host="localhost", database="stima2")
 cur = conn.cursor()
+turn = 1
 
-'''turn  = 1
 loop = True
-while loop:
-    result = args
+txtbotajg = ""
+'''while loop:
+    result = txt
     if result == "exit":
         cur.execute("DELETE FROM data;")
         conn.commit()
         loop = False
     else:
-        print(inputCommand(result))
+        inputCommand(result)
         turn += 1'''
+
 #(minggu|bulan|Minggu|Bulan)|(?:([1-9]|[12][0-9]|3[01])
 #b(?:IF1\d{3}|IF2\d{3}|IF3\d{3}|IF4\d{3})\b
 # result = re.search(r'\b(?:\\(ID: \d{1})\\|\\(ID: \d{2})\\)\b' ,"gua sudah menyelesaikan kuis (ID: 1) kemaren")

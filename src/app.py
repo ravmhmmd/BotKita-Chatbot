@@ -11,8 +11,7 @@ def home() :
 @app.route("/get")
 def get_bot_response():
     txtdariuser = request.args.get('pesan')
-    return str(inputCommand(txtdariuser))
-
-
+    return inputCommand(txtdariuser)
+    
 if __name__ == "__main__":
     app.run()

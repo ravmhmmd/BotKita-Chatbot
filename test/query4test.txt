@@ -1,0 +1,14 @@
+# ======== test case ==========
+# Fungsionalitas 1
+# halo bot, tolong ingetin kalau ada Kuis IF3310 bab 2 sampai 3 pada 29 april 2021
+# Praktikum IF3310 materi generic class tanggal 5 mei 2021
+# oyy cokk ingetin gua lah ntar kuis IF2121 materi vektor tanggal 11/05/21
+# Apa saja Deadline yang dimiliki sejauh ini
+# Apa saja deadline antara 30/04/2021 hingga 11/05/2021
+# Deadline 2 hari ke depan apa aja
+# 3 minggu ke depan ada deadline kuis apa aja
+# 
+# oyy bot lu bisa ngapain aja sih
+# gua sudah menyelesaikan kuis (ID: 1) kemaren
+# deadline tubes (ID: 1) diundur jadi tanggal 12/07/2021
+# oyy cok lu mau apa sih
