@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        :root {
+        --border: 2px solid #ddd;
+        --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --chatz-bg: #fff;
+        --sender-pesan-bg: #fda027;
+        --bot-pesan-bg: #ececec;
+      }
+      
+      body {
+        font-family: Helvetica, sans-serif;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        display: flex;
+        background-image: var(--body-bg);
+      }
+      
+      .chatz {
+        justify-content: space-between;
+        width: 100%;
+        max-width: 867px;
+        margin: 25px 10px;
+        height: calc(100% - 50px);
+        display: flex;
+        flex-flow: column wrap;
+        border: var(--border);
+        border-radius: 5px;
+        box-shadow: 0 15px 15px -5px rgba(0, 0, 0, 0.2);
+        background: var(--chatz-bg);
+      }
+      
+      .chatz-header {
+        padding: 10px;
+        font-size: medium;
+        text-align: center;
+        justify-content: space-between;
+        border-bottom: var(--border);
+        color: #666;
+        background: #eee;
+      }
+      
+      .chatz-conv {
+        padding: 10px;
+        flex: 1;
+        overflow-y: auto;
+      }
+      .chatz-conv::-webkit-scrollbar {
+        width: 6px;
+      }
+      .chatz-conv::-webkit-scrollbar-track {
+        background: #ddd;
+      }
+      .chatz-conv::-webkit-scrollbar-thumb {
+        background: #bdbdbd;
+      }
+
+      .pesan {
+        display: flex;
+        margin-bottom: 10px;
+        align-items: flex-end;
+      }
+
+      .pesan-bubble {
+        padding: 15px;
+        max-width: 450px;
+        background: var(--bot-pesan-bg);
+        border-radius: 15px;
+      }
+
+      .pesan-info {
+        align-items: center;
+        justify-content: space-between;
+        display: flex;     
+        margin-bottom: 10px;
+      }
+      .pesan-info-name {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      .pesan-info-time {
+        font-size: 0.85em;
+      }
+      
+      .bot-pesan .pesan-bubble {
+        border-bottom-left-radius: 0;
+      }
+      
+      .sender-pesan {
+        flex-direction: row-reverse;
+      }
+      .sender-pesan .pesan-bubble {
+        color: #fff;
+        border-bottom-right-radius: 0;
+        background: var(--sender-pesan-bg);
+      }
+      
+      .chatz-inputbox {
+        padding: 10px;
+        display: flex;
+        background: #eee;
+        border-top: var(--border);
+      }
+      .chatz-inputbox * {
+        font-size: 1em;
+        padding: 10px;
+        border: none;
+        border-radius: 3px;
+      }
+
+      .chatz-input {
+        flex: 1;
+        background: #ddd;
+      }
+
+      .chatz-submit-btn {
+        font-weight: bold;
+        margin-left: 10px;
+        transition: background 0.23s;
+        cursor: pointer;
+        background: #fda027;
+        color: #fff;
+      }
+      .chatz-submit-btn:hover {
+        background: #ffbd66;
+      }
+      
+      .chatz-conv {
+        background-color: #fcfcfe;
+      }
+
+      html {
+        box-sizing: border-box;
+      }
+
+      .sidenav {
+        height: 100%;
+        width: 170px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #fda027;
+        overflow-x: hidden;
+        padding-top: 20px;
+        padding-right: 10px;
+      }
+
+      *,
+      *:before,
+      *:after {
+        padding: 0;
+        margin: 0;
+        box-sizing: inherit;
+      }
+
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+<body>
+  <div class="sidenav">
+    <div style="padding: 6px;"></div>
+    <p style="font-weight: bold; text-align: center; color: white; padding-left: 7.5px;font-size: x-large;">BOTKITA</p>
+    <div style="padding: 320px;"></div>
+    <p style="font-size: small; text-align: center; color: white; padding-left: 7.5px; font-weight: bold;">©2021 by BOTKITA</p>
+  </div>
+
+  <section class="chatz">
+    <header class="chatz-header">
+      <div class="chatz-header-title">
+        <i></i>BotKita Chatbot <i class="material-icons" style="font-size: large;">verified</i>
+      </div>
+    </header>
+
+    <main class="chatz-conv">
+      <div class="pesan bot-pesan">
+        <div class="pesan-bubble">
+          <div class="pesan-info">
+            <div class="pesan-info-name">BotKita</div>
+            <div class="pesan-info-time">23.59</div>
+          </div>
+          <div class="pesan-text">
+            Selamat datang di Chatbot BotKita! Kirim pesan untuk memulai percakapan.
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <form class="chatz-inputbox">
+      <input type="text" class="chatz-input" id="textInput" placeholder="Masukkan pesan...">
+      <button type="submit" class="chatz-submit-btn">Send</button>
+    </form>
+  </section>
+
+  <script>
+    const PERSON_NAME = "Anda";
+    const BOT_NAME = "BotKita";
+    const chatzForm = get(".chatz-inputbox");
+    const chatzInput = get(".chatz-input");
+    const chatzconv = get(".chatz-conv");
+
+    chatzForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const pesanText = chatzInput.value;
+      if (!pesanText) return;
+      appendMessage(PERSON_NAME, "sender", pesanText);
+      chatzInput.value = "";
+      botResponse(pesanText);
+    });
+
+    function appendMessage(name, role, txt) {
+      const pesanHTML = `
+        <div class="pesan ${role}-pesan">
+          <div class="pesan-bubble">
+            <div class="pesan-info">
+              <div class="pesan-info-name">${name}</div>
+              <div class="pesan-info-time">${formatDate(new Date())}</div>
+            </div>
+            <div class="pesan-text">${txt}</div>
+          </div>
+        </div>
+      `;
+      chatzconv.insertAdjacentHTML("beforeend", pesanHTML);
+      chatzconv.scrollTop += 500;
+    }
+
+    function botResponse(txt) {
+      $.get("/get", { pesan: txt }).done(function (data) {
+        const pesanText = data;
+        console.log(data);
+        console.log(txt);
+        appendMessage(BOT_NAME, "bot", pesanText);
+      });
+    }
+
+    function get(selector, root = document) {
+      return root.querySelector(selector);
+    }
+
+    function formatDate(tgl) {
+      const jam = "0" + tgl.getHours();
+      const menit = "0" + tgl.getMinutes();
+      return `${jam.slice(-2)}:${menit.slice(-2)}`;
+    }
+  </script>
+</body>
+</html>
