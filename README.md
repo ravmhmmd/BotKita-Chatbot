@@ -21,18 +21,18 @@ Program dapat digunakan dengan cara sebagai berikut :
 ```bash
 pip install Flask
 ```
-8. Install library mariadb dengan memasukkan perintah berikut
+5. Install library mariadb dengan memasukkan perintah berikut
 ```bash
 pip install mariadb
 ```
-11. Jalankan app.py dengan perintah berikut
+6. Jalankan app.py dengan perintah berikut
 ```bash
 python app.py
 ```
-13. Cli akan menampilkan alamat localhost. Tampilan cli akan sebagai berikut 
+7. Cli akan menampilkan alamat localhost. Tampilan cli akan sebagai berikut 
 ```Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)```
-9. Buka web browser dan masukkan alamat tersebut.
-10. BotKita Chatbot siap digunakan.
+8. Buka web browser dan masukkan alamat tersebut.
+9. BotKita Chatbot siap digunakan.
 
 ## Tentang Pembuat
 
