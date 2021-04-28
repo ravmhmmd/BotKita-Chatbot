@@ -424,17 +424,17 @@ def fitur():
 conn = mariadb.connect(user="root", password="0405", host="localhost", database="stima2")
 cur = conn.cursor()
 
-turn  = 1
+'''turn  = 1
 loop = True
 while loop:
-    result = input()
+    result = args
     if result == "exit":
         cur.execute("DELETE FROM data;")
         conn.commit()
         loop = False
     else:
         print(inputCommand(result))
-        turn += 1
+        turn += 1'''
 #(minggu|bulan|Minggu|Bulan)|(?:([1-9]|[12][0-9]|3[01])
 #b(?:IF1\d{3}|IF2\d{3}|IF3\d{3}|IF4\d{3})\b
 # result = re.search(r'\b(?:\\(ID: \d{1})\\|\\(ID: \d{2})\\)\b' ,"gua sudah menyelesaikan kuis (ID: 1) kemaren")
