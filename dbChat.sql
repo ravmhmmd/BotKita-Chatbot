@@ -27,7 +27,7 @@ CREATE TABLE `data` (
   `kode_matkul` varchar(25) NOT NULL,
   `deskripsi` varchar(30) NOT NULL,
   `jenis_task` varchar(30) NOT NULL,
-  `tanggal` varchar(25) NOT NULL,
+  `tanggal` date NOT NULL,
   PRIMARY KEY (`id_task`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,7 +38,6 @@ CREATE TABLE `data` (
 
 LOCK TABLES `data` WRITE;
 /*!40000 ALTER TABLE `data` DISABLE KEYS */;
-INSERT INTO `data` VALUES ('(ID: 1)','IF3310','bab 2 sampai 3','Kuis','22/04/2014');
 /*!40000 ALTER TABLE `data` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-04-28  2:13:35
+-- Dump completed on 2021-04-28 15:53:56
