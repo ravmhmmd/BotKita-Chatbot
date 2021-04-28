@@ -8,14 +8,22 @@ Program ini ditulis dalam rangka menyelesaikan Tugas Besar 3 dari mata kuliah IF
 Program berjalan dengan baik dengan spesifikasi :
 - Windows 10 64-bit
 - [Python 3.5](https://www.python.org/) atau diatasnya
-- MariaDB 10.5
+- PIP 21.1 atau diatasnya
+- MariaDB 10.5 atau diatasnya
 
 ## Cara Menggunakan Program
 
 Program dapat digunakan dengan cara sebagai berikut :
 1. Clone repository [ini](https://github.com/ravmhmmd/Tubes3_13519130) atau [download](https://github.com/ravmhmmd/Tubes3_13519130/archive/main.zip) repository ini terlebih dahulu.
-2. 
-3. 
+2. Buka MariaDB dan tambahkan database dengan nama stima3, kemudian import file dbChat.sql pada folder test ke database stima3.
+3. Buka terminal dan arahkan direktori ke folder src.
+4. Install library flask dengan memasukkan perintah ‘pip install Flask’
+5. Install library mariadb dengan memasukkan perintah ‘pip install mariadb’
+6. Jalankan app.py dengan perintah ‘python app.py’
+7. Cli akan menampilkan alamat localhost. Tampilan cli adalah sebagai berikut 
+8. Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+9. Buka web browser dan masukkan alamat tersebut.
+10. BotKita Chatbot siap digunakan.
 
 ## Tentang Pembuat
 
