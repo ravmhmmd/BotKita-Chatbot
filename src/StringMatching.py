@@ -2,64 +2,35 @@ import re
 from datetime import datetime, date, timedelta
 import mariadb
 
-def KMPSearch(pat, txt):
-    M = len(pat)
-    N = len(txt)
-    count =0
-    # create lps[] that will hold the longest prefix suffix 
-    # values for pattern
-    lps = [0]*M
-    j = 0 # index for pat[]
-  
-    # Preprocess the pattern (calculate lps[] array)
-    computeLPSArray(pat, M, lps)
-  
-    i = 0 # index for txt[]
-    while i < N:
+class KMP:
+    def partial(self, pattern):
+
+        result = [0]
+
+        for i in range(1, len(pattern)):
+            j = result[i-1]
+            while j > 0 and pattern[j] != pattern[i]:
+                j = result[j - 1]
+            result.append(j + 1 if pattern[j] == pattern[i] else j)
+        return result
+
+
+    def search(self, text, query):
+        # Mengembalikan semua query posisi yang cocok dari query pada text input
         
-        if pat[j] == txt[i]:
-            i += 1
-            j += 1
-  
-        if j == M:
-            #print ("Found pattern at index " + str(i-j))
-            count +=1
-            return i-j
-            j = lps[j-1]
-        
-        # mismatch after j matches
-        elif i < N and pat[j] != txt[i]:
-            # Do not match lps[0..lps[j-1]] characters,
-            # they will match anyway
-            if j != 0:
-                j = lps[j-1]
-            else:
-                i += 1
-        #print(count)
-    #return count
-def computeLPSArray(pat, M, lps):
-    len = 0 # length of the previous longest prefix suffix
-  
-    lps[0] # lps[0] is always 0
-    i = 1
-  
-    # the loop calculates lps[i] for i = 1 to M-1
-    while i < M:
-        if pat[i]== pat[len]:
-            len += 1
-            lps[i] = len
-            i += 1
-        else:
-            # This is tricky. Consider the example.
-            # AAACAAAA and i = 7. The idea is similar 
-            # to search step.
-            if len != 0:
-                len = lps[len-1]
-  
-                # Also, note that we do not increment i here
-            else:
-                lps[i] = 0
-                i += 1
+        partial = self.partial(query)
+        ret = []
+        j = 0
+
+        for i in range(len(text)):
+            while j > 0 and text[i] != query[j]:
+                j = partial[j - 1]
+            if text[i] == query[j]: j += 1
+            if j == len(query):
+                ret.append(i - (j - 1))
+                j = partial[j - 1]
+
+        return ret
 
 def getDate(date):
 # 
@@ -154,7 +125,9 @@ def convertDeadlinetoDate(text):
     return endDate
 
 def inputValue(text, query):
-    stemText = text[KMPSearch(query,text):]
+    kmp = KMP()
+    
+    stemText = text[kmp.search(text, query)[0]:]
     kodeKuliah = getKodeKuliah(stemText).group()
     tanggal = getDate(stemText)
     stemText = deleteSubstring(tanggal, stemText)
@@ -188,7 +161,7 @@ def cariDeadline(inpt):
     kodeKuliah = getKodeKuliah(inpt).group()
     cur.execute("SELECT tanggal FROM data WHERE kode_matkul = '"+kodeKuliah+"';")
     for row in cur.fetchall():
-        return row[0] 
+        return str(row[0]) 
 
 def showDeadlineWithJenisTask(deadlinePerSatuanWaktu, task, listText):
     global conn
@@ -443,7 +416,7 @@ def fitur():
     output += " 5   Praktikum<br>"
     return output
 
-conn = mariadb.connect(user="root", password="0405", host="localhost", database="stima2")
+conn = mariadb.connect(user="root", password="", host="localhost", database="stima2")
 cur = conn.cursor()
 turn = 1
 
@@ -473,7 +446,7 @@ txtbotajg = ""
 # Apa saja deadline antara 30/04/2021 hingga 11/05/2021
 # Deadline 2 hari ke depan apa aja
 # 3 minggu ke depan ada deadline kuis apa aja
-# 
+# deadline kuis IF2121 itu kapan si
 # oyy bot lu bisa ngapain aja sih
 # gua sudah menyelesaikan kuis (ID: 1) kemaren
 # deadline tubes (ID: 1) diundur jadi tanggal 12/07/2021
